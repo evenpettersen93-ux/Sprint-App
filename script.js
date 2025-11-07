@@ -18,11 +18,17 @@ function generateSession() {
       inputTid.step = "0.01";
       inputTid.placeholder = "Tid (sek)";
       inputTid.className = "tid";
+      inputTid.dataset.set = s;
+      inputTid.dataset.rep = r;
+      inputTid.addEventListener("input", updateLiveLog);
 
       const inputKommentar = document.createElement("input");
       inputKommentar.type = "text";
       inputKommentar.placeholder = "Kommentar";
       inputKommentar.className = "kommentar";
+      inputKommentar.dataset.set = s;
+      inputKommentar.dataset.rep = r;
+      inputKommentar.addEventListener("input", updateLiveLog);
 
       fieldset.appendChild(label);
       fieldset.appendChild(inputTid);
@@ -34,7 +40,7 @@ function generateSession() {
   }
 }
 
-function saveSession() {
+function updateLiveLog() {
   const sets = document.querySelectorAll("#sessionArea fieldset");
   let logg = "";
 

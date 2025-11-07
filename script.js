@@ -93,3 +93,20 @@ function exportCSV() {
   link.click();
   document.body.removeChild(link);
 }
+
+function logManualRun() {
+  const set = document.getElementById("manualSet").value;
+  const rep = document.getElementById("manualRep").value;
+  const time = document.getElementById("manualTime").value;
+  const comment = document.getElementById("manualComment").value;
+
+  if (!time) return;
+
+  const list = document.getElementById("manualLogList");
+  const entry = document.createElement("li");
+  entry.innerText = `Sett ${set}, Løp ${rep}: ${parseFloat(time).toFixed(2)}s – ${comment}`;
+  list.appendChild(entry);
+
+  document.getElementById("manualTime").value = "";
+  document.getElementById("manualComment").value = "";
+}

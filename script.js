@@ -43,11 +43,27 @@ function saveSession() {
     const tider = sett.querySelectorAll(".tid");
     const kommentarer = sett.querySelectorAll(".kommentar");
 
+    let sum = 0;
+    let count = 0;
+    let best = null;
+
     tider.forEach((tidInput, rIndex) => {
-      const tid = tidInput.value;
+      const tid = parseFloat(tidInput.value);
       const kommentar = kommentarer[rIndex].value;
-      logg += `  Løp ${rIndex + 1}: ${tid ? tid + "s" : "–"} ${kommentar ? "– " + kommentar : ""}\n`;
+
+      if (!isNaN(tid)) {
+        sum += tid;
+        count++;
+        if (best === null || tid < best) best = tid;
+      }
+
+      logg += `  Løp ${rIndex + 1}: ${!isNaN(tid) ? tid.toFixed(2) + "s" : "–"} ${kommentar ? "– " + kommentar : ""}\n`;
     });
+
+    if (count > 0) {
+      const snitt = (sum / count).toFixed(2);
+      logg += `  ➤ Snitt: ${snitt}s | Beste: ${best.toFixed(2)}s\n`;
+    }
   });
 
   document.getElementById("logOutput").innerText = logg;

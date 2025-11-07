@@ -1,52 +1,79 @@
-function calculateSprint() {
-  const speed = parseFloat(document.getElementById("speed").value);
-  const distance = parseInt(document.getElementById("distance").value);
-  if (isNaN(speed) || speed <= 0) {
-    document.getElementById("sprintResult").innerText = "Skriv inn gyldig hastighet.";
-    return;
+function generateSession() {
+  const sets = parseInt(document.getElementById("sets").value);
+  const reps = parseInt(document.getElementById("reps").value);
+  const sessionArea = document.getElementById("sessionArea");
+  sessionArea.innerHTML = "";
+
+  for (let s = 1; s <= sets; s++) {
+    const fieldset = document.createElement("fieldset");
+    const legend = document.createElement("legend");
+    legend.innerText = `Sett ${s}`;
+    fieldset.appendChild(legend);
+
+    for (let r = 1; r <= reps; r++) {
+      const label = document.createElement("label");
+      label.innerText = `Løp ${r}: `;
+      const inputTid = document.createElement("input");
+      inputTid.type = "number";
+      inputTid.step = "0.01";
+      inputTid.placeholder = "Tid (sek)";
+      inputTid.className = "tid";
+
+      const inputKommentar = document.createElement("input");
+      inputKommentar.type = "text";
+      inputKommentar.placeholder = "Kommentar";
+      inputKommentar.className = "kommentar";
+
+      fieldset.appendChild(label);
+      fieldset.appendChild(inputTid);
+      fieldset.appendChild(inputKommentar);
+      fieldset.appendChild(document.createElement("br"));
+    }
+
+    sessionArea.appendChild(fieldset);
   }
-  const speedMs = speed * 1000 / 3600;
-  const time = distance / speedMs;
-  document.getElementById("sprintResult").innerText = 
-    `Tid på ${distance}m: ${time.toFixed(2)} sekunder`;
 }
 
-function convertToTempo() {
-  const speed = parseFloat(document.getElementById("speed").value);
-  if (isNaN(speed) || speed <= 0) {
-    document.getElementById("tempoResult").innerText = "Skriv inn gyldig km/t.";
-    return;
-  }
-  const tempo = 60 / speed;
-  const min = Math.floor(tempo);
-  const sec = Math.round((tempo - min) * 60);
-  document.getElementById("tempoResult").innerText = `Tempo: ${min} min ${sec} sek per km`;
+function saveSession() {
+  const sets = document.querySelectorAll("#sessionArea fieldset");
+  let logg = "";
+
+  sets.forEach((sett, sIndex) => {
+    logg += `Sett ${sIndex + 1}:\n`;
+    const tider = sett.querySelectorAll(".tid");
+    const kommentarer = sett.querySelectorAll(".kommentar");
+
+    tider.forEach((tidInput, rIndex) => {
+      const tid = tidInput.value;
+      const kommentar = kommentarer[rIndex].value;
+      logg += `  Løp ${rIndex + 1}: ${tid ? tid + "s" : "–"} ${kommentar ? "– " + kommentar : ""}\n`;
+    });
+  });
+
+  document.getElementById("logOutput").innerText = logg;
 }
 
-function convertToKmt() {
-  const min = parseFloat(document.getElementById("tempoMin").value);
-  const sec = parseFloat(document.getElementById("tempoSec").value);
-  if (isNaN(min) || isNaN(sec)) {
-    document.getElementById("tempoResult").innerText = "Skriv inn gyldig tempo.";
-    return;
-  }
-  const totalMin = min + sec / 60;
-  const speed = 60 / totalMin;
-  document.getElementById("tempoResult").innerText = `Hastighet: ${speed.toFixed(2)} km/t`;
-}
+function exportCSV() {
+  const sets = document.querySelectorAll("#sessionArea fieldset");
+  let csv = "Sett,Løp,Tid (sek),Kommentar\n";
 
-const logList = document.getElementById("logList");
-function addLog() {
-  const type = document.getElementById("sessionType").value;
-  const time = parseFloat(document.getElementById("sessionTime").value);
-  const note = document.getElementById("sessionNote").value;
-  if (isNaN(time)) return;
+  sets.forEach((sett, sIndex) => {
+    const tider = sett.querySelectorAll(".tid");
+    const kommentarer = sett.querySelectorAll(".kommentar");
 
-  const now = new Date().toLocaleTimeString();
-  const entry = document.createElement("li");
-  entry.innerText = `${type}: ${time.toFixed(2)}s – ${note} (${now})`;
-  logList.appendChild(entry);
+    tider.forEach((tidInput, rIndex) => {
+      const tid = tidInput.value || "";
+      const kommentar = kommentarer[rIndex].value || "";
+      csv += `${sIndex + 1},${rIndex + 1},${tid},${kommentar}\n`;
+    });
+  });
 
-  document.getElementById("sessionTime").value = "";
-  document.getElementById("sessionNote").value = "";
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "sprint_økt.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

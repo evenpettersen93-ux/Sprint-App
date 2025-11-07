@@ -28,6 +28,20 @@
     <pre id="logOutput"></pre>
   </section>
 
+  <section>
+    <h2>Logg løp manuelt</h2>
+    <label for="manualSet">Sett:</label>
+    <input type="number" id="manualSet" min="1" value="1">
+    <label for="manualRep">Løp:</label>
+    <input type="number" id="manualRep" min="1" value="1"><br>
+    <label for="manualTime">Tid (sek):</label>
+    <input type="number" id="manualTime" step="0.01"><br>
+    <label for="manualComment">Kommentar:</label>
+    <input type="text" id="manualComment"><br>
+    <button onclick="logManualRun()">Legg til løp</button>
+    <ul id="manualLogList"></ul>
+  </section>
+
   script.js</script>
 </body>
 </html>
